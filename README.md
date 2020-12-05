@@ -45,68 +45,6 @@ const theme = createMuiTheme({
 export default theme;
 ```
 
-### _app.tsxを作成
-
-```tsx
-import React, { useEffect } from 'react';
-import { ThemeProvider } from '@material-ui/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { AppProps } from 'next/app';
-
-import theme from '../theme';
-
-const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
-  useEffect(() => {
-    const jssStyles = document.querySelector('#jss-server-side');
-    if (jssStyles && jssStyles.parentNode) {
-      jssStyles.parentNode.removeChild(jssStyles);
-    }
-  }, []);
-
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Component {...pageProps} />
-    </ThemeProvider>
-  );
-};
-
-export default MyApp;
-
-
-```
-
-
-### _document.tsxを作成
-
-Material UIで使うフォントを読み込む。
-
-```tsx
-import NextDocument, { Html, Head, Main, NextScript } from 'next/document';
-
-class Document extends NextDocument {
-  render() {
-    return (
-      <Html lang="ja">
-        <Head>
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    );
-  }
-}
-
-export default Document;
-
-```
-
 ### 全コンポーネントでthemeを読み込むように設定
 
 `pages/_app.tsx`と`pages/_document.tsx`を作成する。
