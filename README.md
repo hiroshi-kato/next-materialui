@@ -48,22 +48,20 @@ export default theme;
 ### _app.tsxを作成
 
 ```tsx
-import React from 'react';
-
+import React, { useEffect } from 'react';
 import { ThemeProvider } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { AppProps } from 'next/app';
 
-import theme from '../src/theme';
+import theme from '../theme';
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
-    // SSRする場合は以下のコメントアウトを解除
-//   useEffect(() => {
-//     const jssStyles = document.querySelector('#jss-server-side');
-//     if (jssStyles && jssStyles.parentNode) {
-//       jssStyles.parentNode.removeChild(jssStyles);
-//     }
-//   }, []);
+  useEffect(() => {
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles && jssStyles.parentNode) {
+      jssStyles.parentNode.removeChild(jssStyles);
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -74,6 +72,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
 };
 
 export default MyApp;
+
 
 ```
 
