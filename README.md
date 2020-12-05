@@ -1,41 +1,184 @@
-# TypeScript Next.js example
+## 概要
 
-This is a really simple project that shows the usage of Next.js with TypeScript.
+素のNext.js（TypeScript）アプリに、Material UIを導入する。
 
-## Deploy your own
+## 作業手順
 
-Deploy the example using [Vercel](https://vercel.com):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/vercel/next.js/tree/canary/examples/with-typescript)
-
-## How to use it?
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+### Next.jsアプリを作成
 
 ```bash
-npx create-next-app --example with-typescript with-typescript-app
-# or
-yarn create next-app --example with-typescript with-typescript-app
+yarn create next-app next-materialui --example=with-typescript
 ```
 
-Deploy it to the cloud with [Vercel](https://vercel.com/import?filter=next.js&utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
 
-## Notes
-
-This example shows how to integrate the TypeScript type system into Next.js. Since TypeScript is supported out of the box with Next.js, all we have to do is to install TypeScript.
-
-```
-npm install --save-dev typescript
+### Material UIライブラリをインストール
+```bash
+yarn add @material-ui/core @material-ui/styles @material-ui/icons
 ```
 
-To enable TypeScript's features, we install the type declarations for React and Node.
+### them.tsを作成
+
+色やフォントなどをカスタマイズするためのファイルを作成。
+
+```ts
+import { createMuiTheme } from '@material-ui/core/styles';
+import { red } from '@material-ui/core/colors';
+
+// Create a theme instance.
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#556cd6',
+    },
+    secondary: {
+      main: '#19857b',
+    },
+    error: {
+      main: red.A400,
+    },
+    background: {
+      default: '#fff',
+    },
+  },
+});
+
+export default theme;
+```
+
+### _app.tsxを作成
+
+```tsx
+import React from 'react';
+
+import { ThemeProvider } from '@material-ui/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { AppProps } from 'next/app';
+
+import theme from '../src/theme';
+
+const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
+    // SSRする場合は以下のコメントアウトを解除
+//   useEffect(() => {
+//     const jssStyles = document.querySelector('#jss-server-side');
+//     if (jssStyles && jssStyles.parentNode) {
+//       jssStyles.parentNode.removeChild(jssStyles);
+//     }
+//   }, []);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Component {...pageProps} />
+    </ThemeProvider>
+  );
+};
+
+export default MyApp;
 
 ```
-npm install --save-dev @types/react @types/react-dom @types/node
+
+
+### _document.tsxを作成
+
+Material UIで使うフォントを読み込む。
+
+```tsx
+import NextDocument, { Html, Head, Main, NextScript } from 'next/document';
+
+class Document extends NextDocument {
+  render() {
+    return (
+      <Html lang="ja">
+        <Head>
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
+}
+
+export default Document;
+
 ```
 
-When we run `next dev` the next time, Next.js will start looking for any `.ts` or `.tsx` files in our project and builds it. It even automatically creates a `tsconfig.json` file for our project with the recommended settings.
+### 全コンポーネントでthemeを読み込むように設定
 
-Next.js has built-in TypeScript declarations, so we'll get autocompletion for Next.js' modules straight away.
+`pages/_app.tsx`と`pages/_document.tsx`を作成する。
 
-A `type-check` script is also added to `package.json`, which runs TypeScript's `tsc` CLI in `noEmit` mode to run type-checking separately. You can then include this, for example, in your `test` scripts.
+```tsx
+// _app.tsx
+
+import React, { useEffect } from 'react';
+import { ThemeProvider } from '@material-ui/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { AppProps } from 'next/app';
+
+import theme from '../theme';
+
+const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
+  useEffect(() => {
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles && jssStyles.parentNode) {
+      jssStyles.parentNode.removeChild(jssStyles);
+    }
+  }, []);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Component {...pageProps} />
+    </ThemeProvider>
+  );
+};
+
+export default MyApp;
+
+```
+
+```tsx
+// _document.tsx
+// SSRするなら別途対応が必要
+// SSR参考:https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_document.js
+
+import React from 'react';
+import NextDocument, { Html, Head, Main, NextScript } from 'next/document';
+import theme from '../theme';
+
+class Document extends NextDocument {
+  render() {
+    return (
+      <Html lang='ja'>
+        <Head>
+          <meta name='theme-color' content={theme.palette.primary.main} />
+          <link
+            rel='stylesheet'
+            href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
+          />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
+}
+
+export default Document;
+```
+
+### indexとaboutページを書き換え
+
+よしなに。
+
+
+### 参考
+- Material-ui公式サンプル:[material-ui/examples/nextjs at master · mui-org/material-ui · GitHub](https://github.com/mui-org/material-ui/tree/master/examples/nextjs)
+- [Material-UIとstyled componentsで，next.jsのcssをいい感じに管理する (Jest/TypeScript対応版) - Qiita](https://qiita.com/o3c9/items/2551820edc156704edba#6-material-ui--styled-components%E3%81%AE%E5%B0%8E%E5%85%A5)
